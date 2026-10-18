@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stix SMP</title>
+<meta name="description" content="Stix SMP - a DonutSMP-style economy and crystal PvP Minecraft server. Java & Bedrock, 1.21.11. Join at stixsmp.net">
+<meta property="og:title" content="Stix SMP">
+<meta property="og:description" content="Economy, crates, spawners and crystal PvP. Join at stixsmp.net">
+<meta property="og:image" content="icon-256.png">
+<meta name="theme-color" content="#0b0612">
+<link rel="icon" href="icon-64.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0612;
+    --bg-2: #130a1f;
+    --card: #1a0f29;
+    --line: #2e1d47;
+    --text: #efe9f7;
+    --muted: #a99bbd;
+    --accent: #d14bff;
+    --accent-2: #8a3dff;
+    --ok: #3ee08f;
+    --bad: #ff5a76;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 Inter, system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+
+  /* nav */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(11, 6, 18, .8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; gap: 24px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font: 700 20px "Space Grotesk", sans-serif; text-decoration: none; }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; }
+  nav .links { display: flex; gap: 20px; margin-left: auto; }
+  nav .links a { color: var(--muted); text-decoration: none; font-weight: 500; }
+  nav .links a:hover { color: var(--text); }
+  @media (max-width: 640px) { nav .links { display: none; } }
+
+  /* hero */
+  .hero {
+    position: relative;
+    padding: 96px 0 80px;
+    text-align: center;
+    background:
+      radial-gradient(60% 50% at 50% 0%, rgba(209, 75, 255, .25), transparent 70%),
+      radial-gradient(40% 40% at 85% 30%, rgba(138, 61, 255, .2), transparent 70%);
+  }
+  .hero::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(70% 60% at 50% 30%, #000 20%, transparent 75%);
+    opacity: .35;
+  }
+  .hero > .wrap { position: relative; z-index: 1; }
+  .logo {
+    width: 128px; height: 128px; border-radius: 28px;
+    box-shadow: 0 0 0 1px var(--line), 0 20px 60px rgba(209, 75, 255, .35);
+  }
+  h1 {
+    font: 700 clamp(44px, 9vw, 88px)/1 "Space Grotesk", sans-serif;
+    margin: 28px 0 12px;
+    letter-spacing: -.02em;
+    background: linear-gradient(90deg, #fff, var(--accent) 60%, var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tag { color: var(--muted); font-size: clamp(17px, 2.4vw, 20px); margin: 0 auto 36px; max-width: 620px; }
+
+  .ip-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .ip {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 14px 22px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: var(--card); color: var(--text);
+    font: 600 18px "Space Grotesk", sans-serif;
+    cursor: pointer; transition: border-color .2s, transform .2s;
+  }
+  .ip:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .ip small { color: var(--muted); font: 500 13px Inter, sans-serif; }
+  .ip.primary { background: linear-gradient(90deg, var(--accent-2), var(--accent)); border-color: transparent; }
+  .ip.primary small { color: rgba(255, 255, 255, .8); }
+
+  .status {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 28px; color: var(--muted); font-size: 15px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+  .dot.on { background: var(--ok); box-shadow: 0 0 12px var(--ok); }
+  .dot.off { background: var(--bad); }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px);
+    background: var(--ok); color: #04210f; font-weight: 600;
+    padding: 10px 18px; border-radius: 999px;
+    opacity: 0; transition: .25s; pointer-events: none; z-index: 20;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* sections */
+  section { padding: 72px 0; }
+  section.alt { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  h2 { font: 700 clamp(28px, 4vw, 40px)/1.15 "Space Grotesk", sans-serif; margin: 0 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 36px; }
+
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 22px;
+  }
+  .card .ico { font-size: 26px; line-height: 1; }
+  .card h3 { font: 700 19px "Space Grotesk", sans-serif; margin: 12px 0 6px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* prices */
+  .prices { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .price {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 14px 16px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--line);
+  }
+  .price b { font-family: "Space Grotesk", sans-serif; color: var(--ok); }
+
+  /* join */
+  .steps { counter-reset: s; display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .step { position: relative; padding-left: 56px; }
+  .step::before {
+    counter-increment: s; content: counter(s);
+    position: absolute; left: 0; top: 0;
+    width: 40px; height: 40px; border-radius: 12px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    font: 700 18px "Space Grotesk", sans-serif;
+  }
+  .step h3 { margin: 6px 0 4px; font: 700 18px "Space Grotesk", sans-serif; }
+  .step p { margin: 0; color: var(--muted); }
+  code { background: #261640; padding: 2px 8px; border-radius: 6px; font-size: 14px; color: var(--text); }
+
+  /* rules */
+  .rules { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .rule { display: flex; gap: 14px; padding: 16px 18px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+  .rule .n { font: 700 18px "Space Grotesk", sans-serif; color: var(--accent); min-width: 22px; }
+  .rule h3 { margin: 0; font-size: 16px; }
+  .rule p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+  .rule .pun { color: var(--bad); font-size: 13px; font-weight: 600; margin-top: 4px; }
+
+  footer { padding: 36px 0 48px; color: var(--muted); font-size: 14px; text-align: center; }
+  footer .brand { justify-content: center; margin-bottom: 10px; color: var(--text); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="icon-64.png" alt="">Stix SMP</a>
+    <div class="links">
+      <a href="#features">Features</a>
+      <a href="#economy">Economy</a>
+      <a href="#join">How to join</a>
+      <a href="#rules">Rules</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <img class="logo" src="icon-256.png" alt="Stix SMP logo">
+    <h1>STIX SMP</h1>
+    <p class="tag">An economy SMP built around massive farms, crates, spawners and crystal PvP. Java &amp; Bedrock, version 1.21.11.</p>
+    <div class="ip-row">
+      <button class="ip primary" data-copy="stixsmp.net">stixsmp.net <small>Java · click to copy</small></button>
+      <button class="ip" data-copy="bedrock.stixsmp.net">bedrock.stixsmp.net <small>Bedrock · port 41585</small></button>
+    </div>
+    <div class="status"><span class="dot" id="dot"></span><span id="status">Checking server status…</span></div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <h2>What's on Stix</h2>
+    <p class="sub">Everything runs on our own custom plugins.</p>
+    <div class="grid">
+      <div class="card"><div class="ico">💰</div><h3>Farm economy</h3><p>Build massive kelp, sea pickle, cactus and log farms and sell the output. Live prices show at the top of your screen.</p></div>
+      <div class="card"><div class="ico">💎</div><h3>Crystal PvP</h3><p>Crystals, anchors and totems, with a combat tag so nobody logs out mid-fight.</p></div>
+      <div class="card"><div class="ico">⚔️</div><h3>Duels</h3><p>Kit duels or own-gear duels for keeps on floating ruin arenas. Bet money or shards.</p></div>
+      <div class="card"><div class="ico">🎁</div><h3>Crates</h3><p>Five crates from Common to Amethyst. Pick your prize, then confirm it.</p></div>
+      <div class="card"><div class="ico">🕷️</div><h3>Spawners</h3><p>Loot spawners that fill up over time. Collect or sell the drops right from the menu.</p></div>
+      <div class="card"><div class="ico">🏛️</div><h3>Auction house &amp; orders</h3><p>List items with <code>/ah</code> or post buy orders with <code>/order</code>. Climb <code>/baltop</code>.</p></div>
+      <div class="card"><div class="ico">✦</div><h3>Shards</h3><p>Earn shards in the AFK arena or 10 per player kill. Spend them in <code>/shardshop</code>.</p></div>
+      <div class="card"><div class="ico">🌆</div><h3>Megacity spawn</h3><p>A huge futuristic city with a group RTP zone that sends your whole squad to the same random spot.</p></div>
+      <div class="card"><div class="ico">🛡️</div><h3>Fair play</h3><p>Grim anticheat plus our own checks for macros, auto totem, killaura, x-ray and dupes.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="economy" class="alt">
+  <div class="wrap">
+    <h2>Sell prices</h2>
+    <p class="sub">The money is in big farms. Prices per item:</p>
+    <div class="prices">
+      <div class="price">Kelp <b>$150</b></div>
+      <div class="price">Dried kelp <b>$150</b></div>
+      <div class="price">Dried kelp block <b>$1,350</b></div>
+      <div class="price">Sea pickle <b>$140</b></div>
+      <div class="price">Logs &amp; wood <b>$120</b></div>
+      <div class="price">Cactus <b>$100</b></div>
+      <div class="price">Bamboo <b>$90</b></div>
+      <div class="price">Sugar cane <b>$80</b></div>
+    </div>
+  </div>
+</section>
+
+<section id="join">
+  <div class="wrap">
+    <h2>How to join</h2>
+    <p class="sub">Free to play on Java and Bedrock.</p>
+    <div class="steps">
+      <div class="step"><h3>Java Edition</h3><p>Multiplayer → Add Server → enter <code>stixsmp.net</code>. Use version 1.21.11.</p></div>
+      <div class="step"><h3>Bedrock Edition</h3><p>Servers → Add Server → address <code>bedrock.stixsmp.net</code>, port <code>41585</code>.</p></div>
+      <div class="step"><h3>Read the rules</h3><p>Agree to the rules when you first join, then run <code>/rtp</code> and start your base.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="rules" class="alt">
+  <div class="wrap">
+    <h2>Rules</h2>
+    <p class="sub">Breaking them can get you banned.</p>
+    <div class="rules">
+      <div class="rule"><span class="n">1</span><div><h3>No cheating</h3><p>No hacked clients, x-ray, killaura, fly, auto-crystal, freecam or other unfair mods.</p><div class="pun">Permanent ban</div></div></div>
+      <div class="rule"><span class="n">2</span><div><h3>No DDoS, doxxing or threats</h3><p>Never attack the server or anyone's network, leak personal info or threaten players.</p><div class="pun">Permanent IP ban</div></div></div>
+      <div class="rule"><span class="n">3</span><div><h3>No racism or hate speech</h3><p>No slurs, racism, homophobia or any hate, in chat, signs, names or voice.</p><div class="pun">Mute or ban</div></div></div>
+      <div class="rule"><span class="n">4</span><div><h3>No duping or exploits</h3><p>Don't abuse bugs or dupes. Report them to staff instead.</p><div class="pun">Ban + wipe</div></div></div>
+      <div class="rule"><span class="n">5</span><div><h3>No ban evasion</h3><p>Don't use another account to get around a ban. Alts for farming are fine.</p><div class="pun">Ban</div></div></div>
+      <div class="rule"><span class="n">6</span><div><h3>No spam or advertising</h3><p>Don't spam chat or advertise other servers.</p><div class="pun">Mute</div></div></div>
+      <div class="rule"><span class="n">7</span><div><h3>No real-money trading</h3><p>Don't sell items, money or accounts for real money.</p><div class="pun">Ban</div></div></div>
+      <div class="rule"><span class="n">8</span><div><h3>Be respectful</h3><p>Have fun, keep it competitive and listen to staff.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="icon-64.png" alt="">Stix SMP</a>
+    <div>stixsmp.net · Not affiliated with Mojang or Microsoft.</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+  // copy the server address
+  const toast = document.getElementById('toast');
+  document.querySelectorAll('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.copy;
+      try { await navigator.clipboard.writeText(text); }
+      catch (e) {
+        const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); } catch (_) {}
+        t.remove();
+      }
+      toast.textContent = 'Copied ' + text;
+      toast.classList.add('show');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => toast.classList.remove('show'), 1600);
+    });
+  });
+
+  // live player count (public status API)
+  (async () => {
+    const dot = document.getElementById('dot'), status = document.getElementById('status');
+    try {
+      const r = await fetch('https://api.mcsrvstat.us/3/stixsmp.net');
+      const d = await r.json();
+      if (d.online) {
+        dot.className = 'dot on';
+        status.textContent = (d.players ? d.players.online : 0) + ' players online';
+      } else {
+        dot.className = 'dot off';
+        status.textContent = 'Server is offline right now';
+      }
+    } catch (e) {
+      status.textContent = 'Join at stixsmp.net';
+    }
+  })();
+</script>
+</body>
+</html>
